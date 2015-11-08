@@ -1,1 +1,15 @@
-python module to search in text files.
+Python module to search in text files.
+
+Usage:
+
+$ python search.py -f <filename> <words_to_search>
+$ python search.py -d <directory> <words_to_search>
+$ python search.py -h
+
+Requirements:
+1. Require nltk package.
+2. Require nltk_data for wordnet and punkt identifiers using: 
+
+import nltk
+nltk.download()
+
