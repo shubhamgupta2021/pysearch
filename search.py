@@ -80,8 +80,6 @@ def search_in_file(file):
                     for line in match_dictionary[word]:
                       print line
                     match_dictionary[word] = []
-            if first_match == 1:
-                print "No results found in %s" %(file)
 
     except IOError as e:
         print "Error: Cannot Open File"
@@ -101,9 +99,12 @@ def main():
         for file in all_files:
             search_in_file(file)
 
-    if source_type == 'file':
+    elif source_type == 'file':
         search_in_file(source)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print "Error: %s" %(e.message)
