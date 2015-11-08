@@ -1,6 +1,6 @@
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
-from nltk import word_tokenize
+from nltk import word_tokenize, sent_tokenize
 from getopt import getopt, GetoptError
 import sys
 from os import walk, path
@@ -53,21 +53,27 @@ def find_synonyms(word):
 def search_in_file(file):
     try:
         with open(file,'r') as fp:
-            print file
-            for line in fp:
-                for word in word_tokenize(line):
+            text = fp.read()
+            sentences = sent_tokenize(text)
+            for sentence in sentences:
+                sentence = sentence.replace('\n', ' ')
+                for word in word_tokenize(sentence):
                     if word in d:
-                        d[word].append(line)
-
-            print "Results found in %s file" %(file)
-            print
+                        d[word].append(sentence)
+            first_match = 1
             for word in d:
                 count=len(d[word])
                 if count > 0:
+                    if first_match == 1:
+                        print "Results found in %s file" %(file)
+                    first_match = 0
                     print "%d results found for %s" %(count, word)
                     for line in d[word]:
                       print line
                     d[word] = []
+            if first_match == 1:
+                print "No results found in %s" %(file)
+        print "\n"
 
     except IOError as e:
         print "Error: Cannot Open File"
@@ -76,11 +82,9 @@ def search_in_file(file):
 def main():
     args = sys.argv[1:]
     (source_type, source, words_to_search) = get_attributes(args)
-    words_with_synonyms = []
     for word in words_to_search:
         for synonm in  find_synonyms(word):
             d[synonm] = []
-        #words_with_synonyms += find_synonyms(word)
     if source_type == 'directory':
         all_files = []
         for (directorypath, directories, files) in walk(source):
