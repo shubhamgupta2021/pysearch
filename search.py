@@ -12,22 +12,25 @@ def get_attributes(argv):
         opts, args = getopt(argv, "hf:d:", ["file", "directory"])
     except GetoptError:
         print """Usage:
-            python search.py -f <filename> words_to_search
-            OR python search.py -d <directory> words_to_search"""
+            python search.py -f <filename> words_to_search>
+            OR python search.py -d <directory> words_to_search>
+            OR python search.py -h"""
         sys.exit(2)
-    if len(opts) >= 2:
+    if len(opts) >= 2 or len(opts)<= 0:
         print """Usage:
-                python search.py -f <filename> words_to_search
-                OR python search.py -d <directory> words_to_search
+                python search.py -f <filename> <words_to_search>
+                OR python search.py -d <directory> <words_to_search>
+                OR python search.py -h
 
-                Give only one option either filename or directory"""
+                Give excatly one option either filename or directory"""
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
             print """Usage:
-                python search.py -f <filename> words_to_search
-                OR python search.py -d <directory> words_to_search"""
+                python search.py -f <filename> <words_to_search>
+                OR python search.py -d <directory> <words_to_search>
+                OR python search.py -h"""
             sys.exit(0)
 
         elif opt == '-f':
