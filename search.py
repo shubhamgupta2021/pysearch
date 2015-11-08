@@ -1,12 +1,11 @@
 from nltk.corpus import wordnet
-from nltk.stem import WordNetLemmatizer
 from nltk import word_tokenize, sent_tokenize
 from getopt import getopt, GetoptError
 import sys
 from os import walk, path
 
 
-d = {}
+match_dictionary = {}
 
 def get_attributes(argv):
     try:
@@ -34,19 +33,25 @@ def get_attributes(argv):
         elif opt == '-f':
             filename = arg
             source_type = 'file'
-            return source_type, filename, args
+            if path.isfile(filename):
+                return source_type, filename, args
+            print "Error: %s is not a file" %(filename)
+            sys.exit(2)
 
         elif opt == '-d':
             directory = arg
             source_type = 'directory'
-            return source_type, directory, args
-
+            if path.isdir(directory):
+                return source_type, directory, args
+            print "Error: %s is not a directory" %(directory)
+            sys.exit(2)
 
 def find_synonyms(word):
     synonyms = []
     synonyms_sets = wordnet.synsets(word)
     for synonyms_set in synonyms_sets:
         synonyms = synonyms + synonyms_set.lemma_names()
+    synonyms.append(word)
     synonyms = set(synonyms)
     return  list(synonyms)
 
@@ -56,24 +61,24 @@ def search_in_file(file):
             text = fp.read()
             sentences = sent_tokenize(text)
             for sentence in sentences:
-                sentence = sentence.replace('\n', ' ')
+                sentence = sentence.replace('\n', '')
                 for word in word_tokenize(sentence):
-                    if word in d:
-                        d[word].append(sentence)
+                    if word in match_dictionary:
+                        match_dictionary[word].append(sentence)
             first_match = 1
-            for word in d:
-                count=len(d[word])
+            for word in match_dictionary:
+                count=len(match_dictionary[word])
+                match_dictionary[word] = set(match_dictionary[word])
                 if count > 0:
                     if first_match == 1:
                         print "Results found in %s file" %(file)
-                    first_match = 0
+                        first_match = 0
                     print "%d results found for %s" %(count, word)
-                    for line in d[word]:
+                    for line in match_dictionary[word]:
                       print line
-                    d[word] = []
+                    match_dictionary[word] = []
             if first_match == 1:
                 print "No results found in %s" %(file)
-        print "\n"
 
     except IOError as e:
         print "Error: Cannot Open File"
@@ -84,7 +89,7 @@ def main():
     (source_type, source, words_to_search) = get_attributes(args)
     for word in words_to_search:
         for synonm in  find_synonyms(word):
-            d[synonm] = []
+            match_dictionary[synonm] = []
     if source_type == 'directory':
         all_files = []
         for (directorypath, directories, files) in walk(source):
