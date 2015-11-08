@@ -13,6 +13,13 @@ def get_attributes(argv):
             python search.py -f <filename> words_to_search
             OR python search.py -d <directory> words_to_search"""
         sys.exit(2)
+    if len(opts) >= 2:
+        print """Usage:
+                python search.py -f <filename> words_to_search
+                OR python search.py -d <directory> words_to_search
+
+                Give only one option either filename or directory"""
+        sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
@@ -31,13 +38,6 @@ def get_attributes(argv):
             source_type = 'directory'
             return source_type, directory, args
 
-        else:
-            print """Usage:
-                python search.py -f <filename> words_to_search
-                OR python search.py -d <directory> words_to_search
-
-                Give only one option either filename or directory"""
-            sys.exit(2)
 
 def find_synonyms(word):
     synonyms = []
